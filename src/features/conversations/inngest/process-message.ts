@@ -115,7 +115,7 @@ export const processMessage = inngest.createFunction(
         name: "title-generator",
         system: TITLE_GENERATOR_SYSTEM_PROMPT,
         model: gemini({
-          model: "gemini-2.5-flash",
+          model: "gemini-2.5-flash-lite",
         }),
       });
 
@@ -152,7 +152,7 @@ export const processMessage = inngest.createFunction(
       description: "An expert AI coding assistant",
       system: systemPrompt,
       model: gemini({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.5-flash-lite",
       }),
       tools: [
         createListFilesTool({ internalKey, projectId }),
@@ -171,33 +171,33 @@ export const processMessage = inngest.createFunction(
       name: "polaris-network",
       agents: [codingAgent],
       maxIter: 20,
-      // router: ({ network }) => {
-      //   const lastResult = network.state.results.at(-1);
-      //   const hasTextResponse = lastResult?.output.some(
-      //     (m) => m.type === "text" && m.role === "assistant",
-      //   );
-      //   const hasToolCalls = lastResult?.output.some(
-      //     (m) => m.type === "tool_call",
-      //   );
-
-      //   // Anthropic outputs text AND tool calls together
-      //   // Only stop if there's text WITHOUT tool calls (final response)
-      //   if (hasTextResponse && !hasToolCalls) {
-      //     return undefined;
-      //   }
-      //   return codingAgent;
-      // },
       router: ({ network }) => {
         const lastResult = network.state.results.at(-1);
-        if (!lastResult) return codingAgent;
-
-        const hasToolCalls = lastResult.output.some(
+        const hasTextResponse = lastResult?.output.some(
+          (m) => m.type === "text" && m.role === "assistant",
+        );
+        const hasToolCalls = lastResult?.output.some(
           (m) => m.type === "tool_call",
         );
 
-        return hasToolCalls ? codingAgent : undefined;
+        // Anthropic outputs text AND tool calls together
+        // Only stop if there's text WITHOUT tool calls (final response)
+        if (hasTextResponse && !hasToolCalls) {
+          return undefined;
+        }
+        return codingAgent;
       },
-    });
+    //   router: ({ network }) => {
+    //     const lastResult = network.state.results.at(-1);
+    //     if (!lastResult) return codingAgent;
+
+    //     const hasToolCalls = lastResult.output.some(
+    //       (m) => m.type === "tool_call",
+    //     );
+
+    //     return hasToolCalls ? codingAgent : undefined;
+    //   },
+    // });
 
     // Run the agent
     const result = await network.run(message);

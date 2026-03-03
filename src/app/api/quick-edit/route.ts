@@ -102,7 +102,7 @@ export async function POST(request: Request) {
       .replace("{documentation}", documentationContext);
 
     const { output } = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-2.5-flash-lite"),
       output: Output.object({ schema: quickEditSchema }),
       prompt,
     });

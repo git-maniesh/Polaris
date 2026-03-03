@@ -187,17 +187,17 @@ export const processMessage = inngest.createFunction(
         }
         return codingAgent;
       },
-    //   router: ({ network }) => {
-    //     const lastResult = network.state.results.at(-1);
-    //     if (!lastResult) return codingAgent;
+      // router: ({ network }) => {
+      //   const lastResult = network.state.results.at(-1);
+      //   if (!lastResult) return codingAgent;
 
-    //     const hasToolCalls = lastResult.output.some(
-    //       (m) => m.type === "tool_call",
-    //     );
+      //   const hasToolCalls = lastResult.output.some(
+      //     (m) => m.type === "tool_call",
+      //   );
 
-    //     return hasToolCalls ? codingAgent : undefined;
-    //   },
-    // });
+      //   return hasToolCalls ? codingAgent : undefined;
+      // },
+    });
 
     // Run the agent
     const result = await network.run(message);
